@@ -1,6 +1,8 @@
 package estruturais;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class Algoritmo {
@@ -8,8 +10,8 @@ public class Algoritmo {
     private static final String                 TOKEN = ".";
     private static final String                 TOKEN_2 = ".X.";
     private static final List<Rota>             rotas = new ArrayList<>();
-    private static final List<Rota>             reprodutores = new ArrayList<>();
-    private static final List<Rota>             filhosGerados = new ArrayList<>();
+    private static List<Rota>             reprodutores = new ArrayList<>();
+    private static List<Rota>             filhosGerados = new ArrayList<>();
     
     public static void geraPopulacaoInicial(Integer n, Integer tamanhoPopulacao, Integer variacoes, String seqInicial){
         for (int j = 0; j < tamanhoPopulacao; ++j) {
@@ -31,25 +33,15 @@ public class Algoritmo {
     }
 
     public static void escolheReprodutores() {
-        Rota menor = null;
-        Rota segundoMenor = null;
-        Rota aux = null;
-        for (Rota rota : rotas) {
-            if(menor == null) menor = rota;
-            if(segundoMenor == null) segundoMenor = rota;
-            if(rota.getDistancia() < segundoMenor.getDistancia()) segundoMenor = rota;
-            if(segundoMenor.getDistancia() < menor.getDistancia()){
-                aux = menor;
-                menor = segundoMenor;
-                segundoMenor = aux;
-                
-            }
-        }
-        reprodutores.add(menor);
-        reprodutores.add(segundoMenor);
+        Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
+        Collections.sort(rotas, c);
+        
+        reprodutores.add(rotas.get(0));
+        reprodutores.add(rotas.get(1));
     }
 
     public static void cruzamentoDosReprodutores() {
+        filhosGerados.clear();
         Rota reprodutorPai = reprodutores.get(0);
         Rota reprodutorMae = reprodutores.get(1);
         String filhoGeradoUm = ".";
@@ -60,6 +52,10 @@ public class Algoritmo {
         Integer l =  0;
         Integer m =  0;
         Integer n =  0;
+        System.out.println("xxxxxxxx");
+        System.out.println(reprodutorPai.getChave());
+        System.out.println(reprodutorMae.getChave());
+        System.out.println("----");
         for (int i = 0; i < arrayPai.length / 2; i++) {
             
             while (filhoGeradoUm.contains(TOKEN + arrayPai[k] + TOKEN)) k++;
@@ -74,6 +70,10 @@ public class Algoritmo {
             while (filhoGeradoDois.contains(TOKEN + arrayPai[n] + TOKEN)) n++;
             filhoGeradoDois += arrayPai[n] + TOKEN;
         }
+        reprodutores.clear();
+        System.out.println(filhoGeradoUm);
+        System.out.println(filhoGeradoDois);
+        System.out.println("xxxxxxxx");
         filhosGerados.add(new Rota(filhoGeradoUm));
         filhosGerados.add(new Rota(filhoGeradoDois));
     }
@@ -84,28 +84,29 @@ public class Algoritmo {
     }
     
     static void atualizaPopulacao(){
-        Rota pior = rotas.get(0);
-        Integer indicePior  = 0;
-        Rota segundoPior = rotas.get(0);
-        Integer indiceSegundoPior = 0;
-        Rota aux = null;
-        Integer indiceAux;
-        for (int i = 1; i < rotas.size(); i++) {
-            if(rotas.get(i).getDistancia() > segundoPior.getDistancia()) {
-                segundoPior = rotas.get(i);
-                indiceSegundoPior = i;
-            }
-            if(segundoPior.getDistancia() > pior.getDistancia()){
-                aux = pior;
-                indiceAux = indicePior;
-                pior = segundoPior;
-                indicePior = indiceSegundoPior;
-                segundoPior = aux;
-                indiceSegundoPior = indiceAux;
-            }
-        }
-        if(filhosGerados.get(0).getDistancia() < filhosGerados.get(1).getDistancia()){
-            
-        }
+        Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
+        
+        Collections.sort(rotas, c);
+
+        filhosGerados.add(rotas.get(rotas.size() - 1));
+        filhosGerados.add(rotas.get(rotas.size() - 2));
+        
+        Collections.sort(filhosGerados, c);
+        
+        rotas.set(rotas.size() - 1, filhosGerados.get(1));
+        rotas.set(rotas.size() - 2, filhosGerados.get(0));
+    }
+    
+    static void printaPopulacao(){
+        System.out.println("-------");
+        rotas.stream().forEach(a -> System.out.println(a.getDistancia()));
+        System.out.println("-------");    
+        
+    }
+
+    static Rota pegaMenor() {
+        Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
+        Collections.sort(rotas, c);
+        return rotas.get(0);
     }
 }

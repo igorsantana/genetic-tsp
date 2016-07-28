@@ -22,7 +22,7 @@ class Main {
     }
     
     private void open() throws FileNotFoundException {
-        this.file   = new FileInputStream("C:\\Users\\i_and\\OneDrive\\Documentos\\NetBeansProjects\\pcv-genetico\\src\\estruturais\\arquivo.txt");
+        this.file   = new FileInputStream("/Users/igorsantana/NetBeansProjects/pcv-genetico/src/estruturais/arquivo.txt");
         this.input  = new InputStreamReader(this.file);
         this.reader = new BufferedReader(this.input);
     }
@@ -54,19 +54,28 @@ class Main {
         int     tamanhoPopulacao    = (int) (qtdVertices * PORCENTAGEM);
         int     variacoes           = (int) (Math.random() * qtdVertices);
         double  taxaDeMutacao       = 1.5;
-        boolean primeiroDeveMutar   = (Math.random() * 100) <= taxaDeMutacao;
-        boolean segundoDeveMutar    = (Math.random() * 100) <= taxaDeMutacao;
+        
         
         Algoritmo.geraPopulacaoInicial(qtdVertices, tamanhoPopulacao, variacoes, sequencia);
-        int i = 1;
+        Rota menor = Algoritmo.pegaMenor();
         Algoritmo.printaPopulacao();
+        int i = 0;
         do{
             Algoritmo.escolheReprodutores();
             Algoritmo.cruzamentoDosReprodutores();
+            
+            boolean primeiroDeveMutar   = (Math.random() * 100) <= taxaDeMutacao;
+            boolean segundoDeveMutar    = (Math.random() * 100) <= taxaDeMutacao;
+            
             Algoritmo.geraMutacao(primeiroDeveMutar , segundoDeveMutar);
             Algoritmo.atualizaPopulacao();
             i++;
-        } while(i <= 10000);
+//            if(menor.getDistancia() == Algoritmo.pegaMenor().getDistancia()){
+//                break;
+//            } 
+//            menor = Algoritmo.pegaMenor();
+        } while(i < 100);
+        
         Algoritmo.printaPopulacao();
     }
     
