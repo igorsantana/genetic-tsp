@@ -14,7 +14,7 @@ class Main {
     private static String       sequencia   = ".";
     private static Integer      qtdVertices;
     private static final String TOKEN_1 = ".";
-    private static final double PORCENTAGEM = 0.1;
+    private static final double PORCENTAGEM = 0.5;
     private static final HashMap<String, Vertice> VERTICES = new HashMap<>();
     
     public static Vertice getValueFromVertice(String key){
@@ -22,7 +22,7 @@ class Main {
     }
     
     private void open() throws FileNotFoundException {
-        this.file   = new FileInputStream("/Users/igorsantana/NetBeansProjects/pcv-genetico/src/estruturais/arquivo.txt");
+        this.file   = new FileInputStream("/tmp/guest-POZ5GE/NetBeansProjects/pcv-genetico/src/estruturais/arquivo.txt");
         this.input  = new InputStreamReader(this.file);
         this.reader = new BufferedReader(this.input);
     }
@@ -51,6 +51,9 @@ class Main {
         Main main = new Main();
         main.read();
         
+        
+        
+        int     tamanhoTorneio      = (int) ((qtdVertices * PORCENTAGEM) * PORCENTAGEM);
         int     tamanhoPopulacao    = (int) (qtdVertices * PORCENTAGEM);
         int     variacoes           = (int) (Math.random() * qtdVertices);
         double  taxaDeMutacao       = 1.5;
@@ -60,8 +63,11 @@ class Main {
         Rota menor = Algoritmo.pegaMenor();
         Algoritmo.printaPopulacao();
         int i = 0;
+        
+        long segundos = System.currentTimeMillis();
+        long limit    = segundos + 9000;
         do{
-            Algoritmo.escolheReprodutores();
+            Algoritmo.escolheReprodutores(tamanhoTorneio, tamanhoPopulacao);
             Algoritmo.cruzamentoDosReprodutores();
             
             boolean primeiroDeveMutar   = (Math.random() * 100) <= taxaDeMutacao;
@@ -74,7 +80,8 @@ class Main {
 //                break;
 //            } 
 //            menor = Algoritmo.pegaMenor();
-        } while(i < 100);
+            segundos = System.currentTimeMillis();
+        } while(segundos < limit);
         
         Algoritmo.printaPopulacao();
     }

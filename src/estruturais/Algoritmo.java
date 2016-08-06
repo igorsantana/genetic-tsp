@@ -1,6 +1,7 @@
 package estruturais;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -55,54 +56,66 @@ public class Algoritmo {
         filhosGerados.clear();
         Rota reprodutorPai = reprodutores.get(0);
         Rota reprodutorMae = reprodutores.get(1);
-        String filhoGeradoUm = ".";
+        String filhoGeradoUm   = ".";
         String filhoGeradoDois = ".";
         String[] arrayPai = reprodutorPai.getChaveNormalizada().split("\\.");
         String[] arrayMae = reprodutorMae.getChaveNormalizada().split("\\.");
         
-        //System.out.println("xxxxxxxx");
-        //System.out.println(reprodutorPai.getChave());
-        //System.out.println(reprodutorMae.getChave());
-        //System.out.println("----");
-        //for (int i = 0; i < arrayPai.length / 2; i++) {
+        
+        int limit    = (int) (arrayPai.length * 0.4);
+        int indexPai = getPosition(limit, arrayPai.length);
+        int indexMae = getPosition(limit, arrayMae.length);
+        while (indexPai == indexMae) {
+            indexMae = getPosition(limit, arrayMae.length);
+        }
             
-            int a = (int) (1 + (Math.random() * (arrayPai.length - 1)));
-            
-            for (int x = 0; x < a; ++x) {
-                filhoGeradoUm += (arrayPai[x] + TOKEN);
+        // ========== GERACAO FILHO 1 =============== // 
+        for (int i = indexPai - 1; i < (indexPai + limit); ++i) {
+            filhoGeradoUm += (arrayPai[i] + TOKEN);
+        }
+        
+        List<String> auxMae = Arrays.asList(arrayMae);
+                Collections.reverse(auxMae);
+        
+        
+        for (String elementoMae : auxMae) {
+            if (!filhoGeradoUm.contains(TOKEN + elementoMae + TOKEN)) {
+                filhoGeradoUm += (elementoMae + TOKEN);
             }
-            
-            System.out.println(filhoGeradoUm);
-            /*
-            int n = 0;
-            while (a < arrayPai.length) {
-                if (!filhoGeradoUm.contains(TOKEN + arrayMae[n] + TOKEN)) {
-                    filhoGeradoUm += (arrayMae[n] + TOKEN);
-                }   
-                n ++;
+        }
+        
+        /*
+        for (String elementoMae : arrayMae) {
+            if (!filhoGeradoUm.contains(TOKEN + elementoMae + TOKEN)) {
+                filhoGeradoUm += (elementoMae + TOKEN);
             }
-            
-            System.out.println(filhoGeradoUm);
-            
-            /*
-            while (filhoGeradoUm.contains(TOKEN + arrayPai[k] + TOKEN)) k++;
-            filhoGeradoUm += (arrayPai[k] + TOKEN);
-            
-            while (filhoGeradoUm.contains(TOKEN + arrayMae[l] + TOKEN)) l++;
-            filhoGeradoUm += (arrayMae[l] + TOKEN);
-//          --------------------------------------------------------------------
-            while (filhoGeradoDois.contains(TOKEN + arrayMae[m] + TOKEN)) m++;
-            filhoGeradoDois += (arrayMae[m] + TOKEN);
-            
-            while (filhoGeradoDois.contains(TOKEN + arrayPai[n] + TOKEN)) n++;
-            filhoGeradoDois += arrayPai[n] + TOKEN;*/
-        //}
-        reprodutores.clear();
-        //System.out.println(filhoGeradoUm);
-        //System.out.println(filhoGeradoDois);
-        //System.out.println("xxxxxxxx");
-        //filhosGerados.add(new Rota(filhoGeradoUm));
-        //filhosGerados.add(new Rota(filhoGeradoDois));
+        }*/
+
+        // ========== GERACAO FILHO 2 =============== // 
+        for (int i = indexMae - 1; i < (indexMae + limit); ++i) {
+            filhoGeradoDois += (arrayMae[i] + TOKEN);
+        }
+        
+        List<String> auxPai = Arrays.asList(arrayPai);
+                Collections.reverse(auxPai);
+        
+        
+        for (String elementoPai : auxPai) {
+            if (!filhoGeradoDois.contains(TOKEN + elementoPai + TOKEN)) {
+                filhoGeradoDois += (elementoPai + TOKEN);
+            }
+        }
+
+        /*
+        for (String elementoPai : arrayPai) {
+            if (!filhoGeradoDois.contains(TOKEN + elementoPai + TOKEN)) {
+                filhoGeradoDois += (elementoPai + TOKEN);
+            }
+        }*/
+
+    reprodutores.clear();
+    filhosGerados.add(new Rota(filhoGeradoUm));
+    filhosGerados.add(new Rota(filhoGeradoDois));
     }
 
     static void geraMutacao(boolean primeiroDeveMutar, boolean segundoDeveMutar) {
@@ -127,9 +140,20 @@ public class Algoritmo {
         rotas.remove(rotas.size() - 2);
     }
     
+    static int getPosition(int limit, int length) {
+        int index  = (int) (1 + (Math.random() * length));
+        while ((index + limit) >= length) {
+            index  = (int) (1 + (Math.random() * length));
+        }
+        return index;
+    }
+    
+//.27.21.26.31.1.13.46.30.36.37.38.43.39.10.42.6.40.45.41.47.2.
+//15.28.8.11.17.23.4.12.16.14.44.20.7.19.18.24.29.5.32.33.3.34.25.35.22.9.48.
+    
     static void printaPopulacao(){
         System.out.println("-------");
-        rotas.stream().forEach(a -> System.out.println(a.getDistancia()));
+        rotas.stream().forEach(a -> System.out.println(a.getDistancia() + " - " + a.getChave()));
         System.out.println("-------");    
         
     }
