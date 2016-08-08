@@ -8,11 +8,11 @@ import java.util.List;
 
 public class Algoritmo {
 
-    private static final String                 TOKEN = ".";
-    private static final String                 TOKEN_2 = ".X.";
-    private static final List<Rota>             rotas = new ArrayList<>();
-    private static List<Rota>             reprodutores = new ArrayList<>();
-    private static List<Rota>             filhosGerados = new ArrayList<>();
+    private static final String                 TOKEN           = ".";
+    private static final String                 TOKEN_2         = ".X.";
+    private static final List<Rota>             rotas           = new ArrayList<>();
+    private static final List<Rota>             reprodutores    = new ArrayList<>();
+    private static final List<Rota>             filhosGerados   = new ArrayList<>();
     
     public static void geraPopulacaoInicial(Integer n, Integer tamanhoPopulacao, Integer variacoes, String seqInicial){
         for (int j = 0; j < tamanhoPopulacao; ++j) {
@@ -36,7 +36,7 @@ public class Algoritmo {
     public static void escolheReprodutores(int tamanhoTorneio, int tamanhoPopulacao) {
         List<Rota> torneio = new ArrayList<>();
         List<Integer> valores = new ArrayList<>();
-        //System.out.println("ROTAS = " + rotas.size());
+        
         while (valores.size() < tamanhoTorneio) {
             int a = (int) (1 + (Math.random() * (tamanhoPopulacao - 1)));
             if (!valores.contains(a)) {
@@ -44,12 +44,11 @@ public class Algoritmo {
                 torneio.add(rotas.get(a));
             }
         }
-        //System.out.println(torneio.size());
         Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
         Collections.sort(torneio, c);
         
         reprodutores.add(torneio.get(0));
-        reprodutores.add(torneio.get(1));
+        reprodutores.add(torneio.get(torneio.size() - 1));
     }
 
     public static void cruzamentoDosReprodutores() {
@@ -65,6 +64,7 @@ public class Algoritmo {
         int limit    = (int) (arrayPai.length * 0.4);
         int indexPai = getPosition(limit, arrayPai.length);
         int indexMae = getPosition(limit, arrayMae.length);
+        
         while (indexPai == indexMae) {
             indexMae = getPosition(limit, arrayMae.length);
         }
@@ -75,21 +75,14 @@ public class Algoritmo {
         }
         
         List<String> auxMae = Arrays.asList(arrayMae);
-                Collections.reverse(auxMae);
         
+        Collections.reverse(auxMae);
         
         for (String elementoMae : auxMae) {
             if (!filhoGeradoUm.contains(TOKEN + elementoMae + TOKEN)) {
                 filhoGeradoUm += (elementoMae + TOKEN);
             }
         }
-        
-        /*
-        for (String elementoMae : arrayMae) {
-            if (!filhoGeradoUm.contains(TOKEN + elementoMae + TOKEN)) {
-                filhoGeradoUm += (elementoMae + TOKEN);
-            }
-        }*/
 
         // ========== GERACAO FILHO 2 =============== // 
         for (int i = indexMae - 1; i < (indexMae + limit); ++i) {
@@ -105,13 +98,6 @@ public class Algoritmo {
                 filhoGeradoDois += (elementoPai + TOKEN);
             }
         }
-
-        /*
-        for (String elementoPai : arrayPai) {
-            if (!filhoGeradoDois.contains(TOKEN + elementoPai + TOKEN)) {
-                filhoGeradoDois += (elementoPai + TOKEN);
-            }
-        }*/
 
     reprodutores.clear();
     filhosGerados.add(new Rota(filhoGeradoUm));

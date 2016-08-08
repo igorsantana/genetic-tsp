@@ -15,7 +15,9 @@ class Rota {
         for(int i = 1; i < c.length ; i++){
             if(i != 1){
                 Vertice anterior = Main.getValueFromVertice(c[i - 1]);
-                this.distancia += Main.getValueFromVertice(c[i]).distancia(anterior);
+                try{
+                    this.distancia += Main.getValueFromVertice(c[i]).distancia(anterior);
+                } catch(Exception e){}
             }
         }
         
