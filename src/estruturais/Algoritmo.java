@@ -8,11 +8,11 @@ import java.util.List;
 
 public class Algoritmo {
 
-    private static final String                 TOKEN           = ".";
-    private static final String                 TOKEN_2         = ".X.";
-    private static final List<Rota>             rotas           = new ArrayList<>();
-    private static final List<Rota>             reprodutores    = new ArrayList<>();
-    private static final List<Rota>             filhosGerados   = new ArrayList<>();
+    private static final String     TOKEN           = ".";
+    private static final String     TOKEN_2         = ".X.";
+    private static final List<Rota> rotas           = new ArrayList<>();
+    private static final List<Rota> reprodutores    = new ArrayList<>();
+    private static final List<Rota> filhosGerados= new ArrayList<>();
     
     public static void geraPopulacaoInicial(Integer n, Integer tamanhoPopulacao, Integer variacoes, String seqInicial){
         for (int j = 0; j < tamanhoPopulacao; ++j) {
@@ -59,7 +59,6 @@ public class Algoritmo {
         String filhoGeradoDois = ".";
         String[] arrayPai = reprodutorPai.getChaveNormalizada().split("\\.");
         String[] arrayMae = reprodutorMae.getChaveNormalizada().split("\\.");
-        
         
         int limit    = (int) (arrayPai.length * 0.4);
         int indexPai = getPosition(limit, arrayPai.length);
@@ -109,13 +108,34 @@ public class Algoritmo {
         if(segundoDeveMutar) filhosGerados.get(1).executaMutacao();
     }
     
+    static void buscaLocal(){
+        Rota baseBuscaLocal = filhosGerados.get(0);
+        
+        String[] vertices = baseBuscaLocal.getChave().split("\\.");
+        Rota melhor = null;
+        for (int i = 0; i < (vertices.length - 3); i++) {
+            
+            String[] vAux = vertices.clone();
+            
+            String aux = vAux[i];
+            vAux[i] = vAux[i + 3];
+            vAux[i + 3] = aux;
+            
+            String aux2 = vAux[i + 1];
+            vAux[i + 1] = vAux[i + 2];
+            vAux[i + 2] = aux2;
+            Rota x = new Rota(vAux);
+            if(x.getDistancia() < baseBuscaLocal.getDistancia()){
+                melhor = x;
+            }
+        }
+        if(melhor != null){
+            filhosGerados.set(0, melhor);
+        }
+    }
+    
     static void atualizaPopulacao(){
         Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
-        
-        //Collections.sort(rotas, c);
-
-        //filhosGerados.add(rotas.get(rotas.size() - 1));
-        //filhosGerados.add(rotas.get(rotas.size() - 2));
         
         rotas.add(filhosGerados.get(0));
         rotas.add(filhosGerados.get(1));
@@ -133,9 +153,6 @@ public class Algoritmo {
         }
         return index;
     }
-    
-//.27.21.26.31.1.13.46.30.36.37.38.43.39.10.42.6.40.45.41.47.2.
-//15.28.8.11.17.23.4.12.16.14.44.20.7.19.18.24.29.5.32.33.3.34.25.35.22.9.48.
     
     static void printaPopulacao(){
         System.out.println("-------");

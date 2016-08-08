@@ -1,17 +1,14 @@
 package estruturais;
 
-/**
- *
- * @author guest-Qf8Gb5
- */
 class Rota {
     private String chave;
     private double distancia = 0; 
     
     public Rota(String chave){
         this.chave = chave;
-        // Remove o primeiro e o último caracter da string
+        
         String[] c = chave.substring(1, chave.length()-1).split("\\.");
+        
         for(int i = 1; i < c.length ; i++){
             if(i != 1){
                 Vertice anterior = Main.getValueFromVertice(c[i - 1]);
@@ -20,7 +17,20 @@ class Rota {
                 } catch(Exception e){}
             }
         }
-        
+    }
+    
+    public Rota (String[] chaves){
+        this.chave = ".";
+        for(int i = 1; i < chaves.length ; i++){
+            this.chave += (chaves[i] + ".");
+            if(i != 1){
+                Vertice anterior = Main.getValueFromVertice(chaves[i - 1]);
+                try{
+                    this.distancia += Main.getValueFromVertice(chaves[i]).distancia(anterior);
+                } catch(Exception e){}
+            }
+        }
+        System.out.println(this.chave);
     }
 
     public String getChaveNormalizada(){
