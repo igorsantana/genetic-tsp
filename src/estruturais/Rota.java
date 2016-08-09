@@ -6,9 +6,7 @@ class Rota {
     
     public Rota(String chave){
         this.chave = chave;
-        
         String[] c = chave.substring(1, chave.length()-1).split("\\.");
-        
         for(int i = 1; i < c.length ; i++){
             if(i != 1){
                 Vertice anterior = Main.getValueFromVertice(c[i - 1]);
@@ -18,12 +16,7 @@ class Rota {
     }
     
     public Rota (String[] chaves){
-        //for (int i = 0; i < chaves.length; ++i) {
-        //    if (chaves[i].equals("")) {
-        //        System.out.println("ERRO " + i);
-        //    }
-        //}
-        this.chave = ".";
+        this.chave = "." + chaves[0] + ".";
         for(int i = 1; i < chaves.length ; i++){
             this.chave += chaves[i] + ".";
             if(i != 1){

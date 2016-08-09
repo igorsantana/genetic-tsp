@@ -15,6 +15,7 @@ public class Algoritmo {
     private static final List<Rota> filhosGerados= new ArrayList<>();
     
     public static void geraPopulacaoInicial(Integer n, Integer tamanhoPopulacao, Integer variacoes, String seqInicial){
+        rotas.clear();
         for (int j = 0; j < tamanhoPopulacao; ++j) {
             String backup = seqInicial;
             for (int i = 0; i < variacoes; ++i) {
@@ -29,12 +30,12 @@ public class Algoritmo {
                 backup = backup.replace(tokenizedB, tokenizedA);
                 backup = backup.replace(TOKEN_2, tokenizedB);
             }   
-            
             rotas.add(new Rota(backup));
         }
     }
 
     public static void escolheReprodutores(int tamanhoTorneio, int tamanhoPopulacao) {
+        reprodutores.clear();
         List<Rota> torneio = new ArrayList<>();
         List<Integer> valores = new ArrayList<>();
         
@@ -109,36 +110,27 @@ public class Algoritmo {
         if(segundoDeveMutar) filhosGerados.get(1).executaMutacao();
     }
     
-    static void buscaLocal(){
+    static void buscaLocal(int bestOrFirst){
         Rota baseBuscaLocal = filhosGerados.get(0);
-        
         String[] vertices = baseBuscaLocal.getChaveNormalizada().split("\\.");
-        Rota melhor = null;
-        for (int i = 0; i < (vertices.length - 3); i++) {
-            
+        Rota melhor = baseBuscaLocal;
+        Boolean shouldBreak = (bestOrFirst == 1);
+        for (int i = 0; i < vertices.length - 3; i++) {
             String[] vAux = vertices.clone();
-            
-            // PROBLEMA = 
-            
-            
-            String aux = vAux[i].toString();
-            vAux[i] = new String(vAux[i + 3]);
-            vAux[i + 3] = aux;
-            
-            String aux2 = new String(vAux[i + 1]);
-            vAux[i + 1] = new String(vAux[i + 2]);
-            vAux[i + 2] = aux2;
-            Rota x = new Rota(vAux);
-            
-            if(x.getDistancia() < baseBuscaLocal.getDistancia()){
-                melhor = x;
+            vAux[i]     = vertices[i + 3];
+            vAux[i + 1] = vertices[i + 2];
+            vAux[i + 2] = vertices[i + 1];
+            vAux[i + 3] = vertices[i];
+            Rota newRota = new Rota(vAux.clone());
+            if(newRota.getDistancia() < melhor.getDistancia()){
+                melhor = newRota;
+                if(shouldBreak) break;
             }
+                
         }
-        if(melhor != null){
+        if(melhor.getDistancia() != baseBuscaLocal.getDistancia())
             filhosGerados.set(0, melhor);
-            System.out.println("MELHOR = " + melhor.getDistancia() + " - DIST = " + baseBuscaLocal.getDistancia());
-            //System.out.println(melhor.getChaveNormalizada());
-        }
+        
     }
     
     static void atualizaPopulacao(){
@@ -155,17 +147,10 @@ public class Algoritmo {
     
     static int getPosition(int limit, int length) {
         int index  = (int) (1 + (Math.random() * length));
-        while ((index + limit) >= length) {
+        while ((index + limit) >= length) 
             index  = (int) (1 + (Math.random() * length));
-        }
-        return index;
-    }
-    
-    static void printaPopulacao(){
-        System.out.println("-------");
-        rotas.stream().forEach(a -> System.out.println(a.getDistancia() + " - " + a.getChave()));
-        System.out.println("-------");    
         
+        return index;
     }
 
     static Rota pegaMenor() {

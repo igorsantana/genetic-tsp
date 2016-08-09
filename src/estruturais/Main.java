@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 class Main {
     private FileInputStream     file;
@@ -15,37 +17,33 @@ class Main {
     private static Integer      qtdVertices;
     private static final String TOKEN_1 = ".";
     private static final double PORCENTAGEM = 0.5;
-    private static final int    tamanhoPopulacao    = 100;
+    private static final int    tamPop    = 50;
     private static final HashMap<String, Vertice> VERTICES = new HashMap<>();
-    private static long start;
+    
     
     public static Vertice getValueFromVertice(String key){
         return VERTICES.get(key);
     }
     
-    private void open() throws FileNotFoundException {
-        this.file   = new FileInputStream("/tmp/guest-qDL8cl/NetBeansProjects/pcv-genetico/src/estruturais/arquivo.txt");
+    private void open(int f) throws FileNotFoundException {
+        this.file   = new FileInputStream("C:\\Users\\i_and\\OneDrive\\Documentos\\NetBeansProjects\\pcv-genetico\\src\\estruturais\\arquivo" + f +".txt");
         this.input  = new InputStreamReader(this.file);
         this.reader = new BufferedReader(this.input);
     }
     
-    public void read() throws IOException {
-        this.open();
-        start = System.currentTimeMillis();
+    public void read(int file) throws IOException {
+        VERTICES.clear();
+        this.open(file);
         
         String linha = this.reader.readLine();
-        
         qtdVertices = Integer.parseInt(linha.trim());
         
         for (int i = 0; i < qtdVertices; ++i) {
             linha   = this.reader.readLine().replaceAll(" +", " ");
             
             String[] dados   = linha.split(" ");
-            
             Vertice  vertice = new Vertice(dados[0], Double.parseDouble(dados[1]), Double.parseDouble(dados[2]));
-            
             VERTICES.put(vertice.getLabel(), vertice);
-            
             Main.sequencia += vertice.getLabel() + TOKEN_1;
         }
         this.close();
@@ -54,38 +52,60 @@ class Main {
     private void close() throws IOException {
         this.file.close();
     }
-    public static void main(String[] args) throws FileNotFoundException, IOException {
-        
-        Main main = new Main();
-        main.read();
-        
-        int     tamanhoTorneio      = tamanhoPopulacao / 2;
-        int     variacoes           = tamanhoPopulacao * 10;
-        double  taxaDeMutacao       = 15.0;
-        
-        Algoritmo.geraPopulacaoInicial(qtdVertices, tamanhoPopulacao, variacoes, sequencia);
-        
-        System.out.println("Tamanho da entrada: " + VERTICES.size());
-        System.out.println("Tamanho da população gerada: " + tamanhoPopulacao);
-        System.out.println("Menor gerado da população: " + (int) Algoritmo.pegaMenor().getDistancia());
+    
+    private void executa (int tamPop, double taxaMutacao, long start, int best) {
+        Algoritmo.geraPopulacaoInicial(qtdVertices, tamPop, qtdVertices / 2, sequencia);
+        int menorInicial = (int) Algoritmo.pegaMenor().getDistancia();
         
         long limit    = start + 9000;
         do{
-            
-            Algoritmo.escolheReprodutores(tamanhoTorneio, tamanhoPopulacao);
+            Algoritmo.escolheReprodutores(tamPop / 2, tamPop);
             Algoritmo.cruzamentoDosReprodutores();
             
-            boolean primeiroDeveMutar   = (Math.random() * 100) <= taxaDeMutacao;
-            boolean segundoDeveMutar    = (Math.random() * 100) <= taxaDeMutacao;
+            boolean primeiroDeveMutar   = (Math.random() * 100) <= taxaMutacao;
+            boolean segundoDeveMutar    = (Math.random() * 100) <= taxaMutacao;
             
             Algoritmo.geraMutacao(primeiroDeveMutar , segundoDeveMutar);
-            //Algoritmo.buscaLocal();
+            Algoritmo.buscaLocal(best);
             Algoritmo.atualizaPopulacao();
+            
             start = System.currentTimeMillis();
         } while(start < limit);
-        
-        System.out.println("Menor valor encontrado: " + (int) Algoritmo.pegaMenor().getDistancia());
-        System.out.println(Algoritmo.pegaMenor().getChaveNormalizada());
-    }   
+        System.out.format("%8d%12d%15s%14d%14d%15s\n",
+                qtdVertices, tamPop, "%" + (int) taxaMutacao,
+                menorInicial, (int) Algoritmo.pegaMenor().getDistancia(),
+                (best == 0 ? "BEST" : "FIRST"));
+    }
     
+    
+    public static void main(String[] args) throws FileNotFoundException, IOException {
+        Main main = new Main();
+        
+        List<CasoTeste> tests = new ArrayList<>();
+        int[] files = {7};
+        int[] pops  = {15, 25, 50, 75, 100};
+        double[] mutations = {15.0, 20.0};
+        int[] improvs = {0, 1};
+        
+        for (int improv : improvs)
+            for (double mutation : mutations) 
+                for (int pop : pops) 
+                    tests.add(new CasoTeste(pop, mutation, improv));
+            
+        
+        
+        
+        
+        for (int file : files){
+            main.read(file);
+            long start;
+            System.out.println("ARQUIVO 0" + file);
+            System.out.format("%s%s%s%s%s%s\n","[Num Vertices]" ,"[Tam. Pop.]", "[Tax. Mutação]", "[Menor Inicial]", "[Menor gerado]", "[Busca Local]");
+            for (CasoTeste teste : tests) {
+                start = System.currentTimeMillis();
+                
+                main.executa(teste.getTamanhoPopulacao(), teste.getTaxaMutacao(), start, teste.getLocal());
+            }
+        } 
+    }   
 }
