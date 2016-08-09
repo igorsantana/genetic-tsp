@@ -9,28 +9,37 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * <p>Classe <b>Main</b>.</p>
+ * <p>Classe responsavel por realizar a Leitura dos Dados e Aplicar o <b>Algoritmo Genetico</b>.</p>
+ * @author Igor
+ * @author Leandro
+ * @since  30/07/2016
+ */
 class Main {
     private FileInputStream     file;
     private InputStreamReader   input;
     private BufferedReader      reader;
-    private static String       sequencia   = ".";
     private static Integer      qtdVertices;
-    private static final String TOKEN_1 = ".";
-    private static final double PORCENTAGEM = 0.5;
-    private static final int    tamPop    = 50;
-    private static final HashMap<String, Vertice> VERTICES = new HashMap<>();
+    private static String       sequencia = ".";
+    private static final String TOKEN     = ".";
+    private static final HashMap<String, Vertice> VERTICES = new HashMap<> ();
     
-    
-    public static Vertice getValueFromVertice(String key){
+    public static Vertice getValueFromVertice(String key) {
         return VERTICES.get(key);
     }
     
     private void open(int f) throws FileNotFoundException {
-        this.file   = new FileInputStream("C:\\Users\\i_and\\OneDrive\\Documentos\\NetBeansProjects\\pcv-genetico\\src\\estruturais\\arquivo" + f +".txt");
+        this.file   = new FileInputStream("C:\\Users\\Milena\\Documents\\NetBeansProjects\\pcv-genetico\\src\\estruturais\\arquivo" + f +".txt");
         this.input  = new InputStreamReader(this.file);
         this.reader = new BufferedReader(this.input);
     }
     
+    /**
+     * Metodo responsavel por carregar os Dados do Arquivo.
+     * @param file Numero do Arquivo a ser buscado.
+     * @throws IOException 
+     */
     public void read(int file) throws IOException {
         VERTICES.clear();
         this.open(file);
@@ -44,7 +53,7 @@ class Main {
             String[] dados   = linha.split(" ");
             Vertice  vertice = new Vertice(dados[0], Double.parseDouble(dados[1]), Double.parseDouble(dados[2]));
             VERTICES.put(vertice.getLabel(), vertice);
-            Main.sequencia += vertice.getLabel() + TOKEN_1;
+            Main.sequencia += vertice.getLabel() + TOKEN;
         }
         this.close();
     }
@@ -82,7 +91,7 @@ class Main {
         Main main = new Main();
         
         List<CasoTeste> tests = new ArrayList<>();
-        int[] files = {7};
+        int[] files = {1};
         int[] pops  = {15, 25, 50, 75, 100};
         double[] mutations = {15.0, 20.0};
         int[] improvs = {0, 1};

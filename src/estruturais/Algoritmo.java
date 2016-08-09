@@ -6,57 +6,75 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-public class Algoritmo {
-
-    private static final String     TOKEN           = ".";
-    private static final String     TOKEN_2         = ".X.";
-    private static final List<Rota> rotas           = new ArrayList<>();
-    private static final List<Rota> reprodutores    = new ArrayList<>();
-    private static final List<Rota> filhosGerados= new ArrayList<>();
+/**
+ * <p>Classe <b>Algoritmo</b>.</p>
+ * <p>Classe responsavel por definir o funcionamento do <b>Algoritmo Generico</b>.</p>
+ * @author Igor
+ * @author Leandro
+ * @since  03/08/2016
+ */
+class Algoritmo {
+    private static final String     TOKEN          = ".";
+    private static final String     TOKEN_ELEMENTO = ".X.";
+    private static final List<Rota> POPULACAO      = new ArrayList<>();
+    private static final List<Rota> REPRODUTORES   = new ArrayList<>();
+    private static final List<Rota> FILHOS_GERADOS = new ArrayList<>();
     
-    public static void geraPopulacaoInicial(Integer n, Integer tamanhoPopulacao, Integer variacoes, String seqInicial){
-        rotas.clear();
+    /**
+     * Metodo responsavel por gerar a Populacao Inicial do Algoritmo.
+     * @param numeroVertices Numero Total de Vertices.
+     * @param tamanhoPopulacao Tamanho da Populacao.
+     * @param variacoes Numero de Variacoes.
+     * @param rotaInicial Sequencia de Elementos da Rota Inicial.
+     */
+    public static void geraPopulacaoInicial(int numeroVertices, int tamanhoPopulacao, int variacoes, String rotaInicial) {
+        POPULACAO.clear();
         for (int j = 0; j < tamanhoPopulacao; ++j) {
-            String backup = seqInicial;
+            String backup = rotaInicial;
             for (int i = 0; i < variacoes; ++i) {
-                int a = (int) (1 + (Math.random() * (n - 1)));
-                int b = (int) (1 + (Math.random() * (n - 1)));
-                while (b == a) b = (int) (1 + (Math.random() * (n - 1)));
+                int a = (int) (1 + (Math.random() * (numeroVertices - 1)));
+                int b = (int) (1 + (Math.random() * (numeroVertices - 1)));
+                while (b == a) b = (int) (1 + (Math.random() * (numeroVertices - 1)));
                 
                 String tokenizedA = TOKEN + a + TOKEN;
                 String tokenizedB = TOKEN + b + TOKEN;
                 
-                backup = backup.replace(tokenizedA, TOKEN_2);
+                backup = backup.replace(tokenizedA, TOKEN_ELEMENTO);
                 backup = backup.replace(tokenizedB, tokenizedA);
-                backup = backup.replace(TOKEN_2, tokenizedB);
+                backup = backup.replace(TOKEN_ELEMENTO, tokenizedB);
             }   
-            rotas.add(new Rota(backup));
+            POPULACAO.add(new Rota(backup));
         }
     }
 
+    /**
+     * Metodo responsavel por selecionar os Reprodutores.
+     * @param tamanhoTorneio Tamanho do Torneio.
+     * @param tamanhoPopulacao Tamanho da Populacao.
+     */
     public static void escolheReprodutores(int tamanhoTorneio, int tamanhoPopulacao) {
-        reprodutores.clear();
-        List<Rota> torneio = new ArrayList<>();
+        REPRODUTORES.clear();
+        List<Rota>    torneio = new ArrayList<>();
         List<Integer> valores = new ArrayList<>();
         
         while (valores.size() < tamanhoTorneio) {
-            int a = (int) (1 + (Math.random() * (tamanhoPopulacao - 1)));
-            if (!valores.contains(a)) {
-                valores.add(a);
-                torneio.add(rotas.get(a));
+            int valor = (int) (1 + (Math.random() * (tamanhoPopulacao - 1)));
+            if (!valores.contains(valor)) {
+                valores.add(valor);
+                torneio.add(POPULACAO.get(valor));
             }
         }
-        Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
-        Collections.sort(torneio, c);
         
-        reprodutores.add(torneio.get(0));
-        reprodutores.add(torneio.get(torneio.size() - 1));
+        Collections.sort(torneio, Rota.getComparator());
+        
+        REPRODUTORES.add(torneio.get(0));
+        REPRODUTORES.add(torneio.get(torneio.size() - 1));
     }
 
     public static void cruzamentoDosReprodutores() {
-        filhosGerados.clear();
-        Rota reprodutorPai = reprodutores.get(0);
-        Rota reprodutorMae = reprodutores.get(1);
+        FILHOS_GERADOS.clear();
+        Rota reprodutorPai = REPRODUTORES.get(0);
+        Rota reprodutorMae = REPRODUTORES.get(1);
         String filhoGeradoUm   = ".";
         String filhoGeradoDois = ".";
         String[] arrayPai = reprodutorPai.getChaveNormalizada().split("\\.");
@@ -100,18 +118,18 @@ public class Algoritmo {
             }
         }
         
-        reprodutores.clear();
-        filhosGerados.add(new Rota(filhoGeradoUm));
-        filhosGerados.add(new Rota(filhoGeradoDois));
+        REPRODUTORES.clear();
+        FILHOS_GERADOS.add(new Rota(filhoGeradoUm));
+        FILHOS_GERADOS.add(new Rota(filhoGeradoDois));
     }
 
     static void geraMutacao(boolean primeiroDeveMutar, boolean segundoDeveMutar) {
-        if(primeiroDeveMutar) filhosGerados.get(0).executaMutacao();
-        if(segundoDeveMutar) filhosGerados.get(1).executaMutacao();
+        if(primeiroDeveMutar) FILHOS_GERADOS.get(0).executaMutacao();
+        if(segundoDeveMutar) FILHOS_GERADOS.get(1).executaMutacao();
     }
     
     static void buscaLocal(int bestOrFirst){
-        Rota baseBuscaLocal = filhosGerados.get(0);
+        Rota baseBuscaLocal = FILHOS_GERADOS.get(0);
         String[] vertices = baseBuscaLocal.getChaveNormalizada().split("\\.");
         Rota melhor = baseBuscaLocal;
         Boolean shouldBreak = (bestOrFirst == 1);
@@ -129,20 +147,20 @@ public class Algoritmo {
                 
         }
         if(melhor.getDistancia() != baseBuscaLocal.getDistancia())
-            filhosGerados.set(0, melhor);
+            FILHOS_GERADOS.set(0, melhor);
         
     }
     
     static void atualizaPopulacao(){
         Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
         
-        rotas.add(filhosGerados.get(0));
-        rotas.add(filhosGerados.get(1));
+        POPULACAO.add(FILHOS_GERADOS.get(0));
+        POPULACAO.add(FILHOS_GERADOS.get(1));
         
-        Collections.sort(rotas, c);
+        Collections.sort(POPULACAO, c);
         
-        rotas.remove(rotas.size() - 1);
-        rotas.remove(rotas.size() - 2);
+        POPULACAO.remove(POPULACAO.size() - 1);
+        POPULACAO.remove(POPULACAO.size() - 2);
     }
     
     static int getPosition(int limit, int length) {
@@ -155,7 +173,7 @@ public class Algoritmo {
 
     static Rota pegaMenor() {
         Comparator<Rota> c = (o1, o2) -> (int) (o1.getDistancia() - o2.getDistancia());
-        Collections.sort(rotas, c);
-        return rotas.get(0);
+        Collections.sort(POPULACAO, c);
+        return POPULACAO.get(0);
     }
 }
