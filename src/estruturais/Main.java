@@ -24,7 +24,7 @@ class Main {
     }
     
     private void open() throws FileNotFoundException {
-        this.file   = new FileInputStream("/tmp/guest-swkjuG/NetBeansProjects/pcv-genetico/src/estruturais/arquivo.txt");
+        this.file   = new FileInputStream("/tmp/guest-qDL8cl/NetBeansProjects/pcv-genetico/src/estruturais/arquivo.txt");
         this.input  = new InputStreamReader(this.file);
         this.reader = new BufferedReader(this.input);
     }
@@ -61,7 +61,7 @@ class Main {
         
         int     tamanhoTorneio      = tamanhoPopulacao / 2;
         int     variacoes           = tamanhoPopulacao * 10;
-        double  taxaDeMutacao       = 2.5;
+        double  taxaDeMutacao       = 15.0;
         
         Algoritmo.geraPopulacaoInicial(qtdVertices, tamanhoPopulacao, variacoes, sequencia);
         
@@ -70,8 +70,8 @@ class Main {
         System.out.println("Menor gerado da população: " + (int) Algoritmo.pegaMenor().getDistancia());
         
         long limit    = start + 9000;
-        
         do{
+            
             Algoritmo.escolheReprodutores(tamanhoTorneio, tamanhoPopulacao);
             Algoritmo.cruzamentoDosReprodutores();
             
@@ -79,7 +79,7 @@ class Main {
             boolean segundoDeveMutar    = (Math.random() * 100) <= taxaDeMutacao;
             
             Algoritmo.geraMutacao(primeiroDeveMutar , segundoDeveMutar);
-            Algoritmo.buscaLocal();
+            //Algoritmo.buscaLocal();
             Algoritmo.atualizaPopulacao();
             start = System.currentTimeMillis();
         } while(start < limit);

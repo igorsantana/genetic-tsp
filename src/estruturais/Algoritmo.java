@@ -29,6 +29,7 @@ public class Algoritmo {
                 backup = backup.replace(tokenizedB, tokenizedA);
                 backup = backup.replace(TOKEN_2, tokenizedB);
             }   
+            
             rotas.add(new Rota(backup));
         }
     }
@@ -82,7 +83,7 @@ public class Algoritmo {
                 filhoGeradoUm += (elementoMae + TOKEN);
             }
         }
-
+        
         // ========== GERACAO FILHO 2 =============== // 
         for (int i = indexMae - 1; i < (indexMae + limit); ++i) {
             filhoGeradoDois += (arrayMae[i] + TOKEN);
@@ -97,10 +98,10 @@ public class Algoritmo {
                 filhoGeradoDois += (elementoPai + TOKEN);
             }
         }
-
-    reprodutores.clear();
-    filhosGerados.add(new Rota(filhoGeradoUm));
-    filhosGerados.add(new Rota(filhoGeradoDois));
+        
+        reprodutores.clear();
+        filhosGerados.add(new Rota(filhoGeradoUm));
+        filhosGerados.add(new Rota(filhoGeradoDois));
     }
 
     static void geraMutacao(boolean primeiroDeveMutar, boolean segundoDeveMutar) {
@@ -111,26 +112,32 @@ public class Algoritmo {
     static void buscaLocal(){
         Rota baseBuscaLocal = filhosGerados.get(0);
         
-        String[] vertices = baseBuscaLocal.getChave().split("\\.");
+        String[] vertices = baseBuscaLocal.getChaveNormalizada().split("\\.");
         Rota melhor = null;
         for (int i = 0; i < (vertices.length - 3); i++) {
             
             String[] vAux = vertices.clone();
             
-            String aux = vAux[i];
-            vAux[i] = vAux[i + 3];
+            // PROBLEMA = 
+            
+            
+            String aux = vAux[i].toString();
+            vAux[i] = new String(vAux[i + 3]);
             vAux[i + 3] = aux;
             
-            String aux2 = vAux[i + 1];
-            vAux[i + 1] = vAux[i + 2];
+            String aux2 = new String(vAux[i + 1]);
+            vAux[i + 1] = new String(vAux[i + 2]);
             vAux[i + 2] = aux2;
             Rota x = new Rota(vAux);
+            
             if(x.getDistancia() < baseBuscaLocal.getDistancia()){
                 melhor = x;
             }
         }
         if(melhor != null){
             filhosGerados.set(0, melhor);
+            System.out.println("MELHOR = " + melhor.getDistancia() + " - DIST = " + baseBuscaLocal.getDistancia());
+            //System.out.println(melhor.getChaveNormalizada());
         }
     }
     

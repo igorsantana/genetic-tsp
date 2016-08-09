@@ -12,25 +12,25 @@ class Rota {
         for(int i = 1; i < c.length ; i++){
             if(i != 1){
                 Vertice anterior = Main.getValueFromVertice(c[i - 1]);
-                try{
-                    this.distancia += Main.getValueFromVertice(c[i]).distancia(anterior);
-                } catch(Exception e){}
+                this.distancia += Main.getValueFromVertice(c[i]).distancia(anterior);
             }
         }
     }
     
     public Rota (String[] chaves){
+        //for (int i = 0; i < chaves.length; ++i) {
+        //    if (chaves[i].equals("")) {
+        //        System.out.println("ERRO " + i);
+        //    }
+        //}
         this.chave = ".";
         for(int i = 1; i < chaves.length ; i++){
-            this.chave += (chaves[i] + ".");
+            this.chave += chaves[i] + ".";
             if(i != 1){
                 Vertice anterior = Main.getValueFromVertice(chaves[i - 1]);
-                try{
-                    this.distancia += Main.getValueFromVertice(chaves[i]).distancia(anterior);
-                } catch(Exception e){}
+                this.distancia += Main.getValueFromVertice(chaves[i]).distancia(anterior);
             }
         }
-        System.out.println(this.chave);
     }
 
     public String getChaveNormalizada(){
@@ -55,12 +55,12 @@ class Rota {
     public void executaMutacao(){
         String backup = this.getChave();
         String[] valores = this.getChaveNormalizada().split("\\.");
-        int valor1 = (int) (Math.random() * valores.length);
-        int valor2 = (int) (Math.random() * valores.length);
+        int valor1 = (int) (1 + (Math.random() * valores.length));
+        int valor2 = (int) (1 + (Math.random() * valores.length));
         
         String tokenizedA = "." + valor1 + ".";
         String tokenizedB = "." + valor2 + ".";
-                
+        
         backup = backup.replace(tokenizedA, ".X.");
         backup = backup.replace(tokenizedB, tokenizedA);
         backup = backup.replace(".X.", tokenizedB);
@@ -73,6 +73,4 @@ class Rota {
     public String toString() {
         return "Rota ( distancia=" + distancia + ")";
     }
-    
-    
 }
