@@ -106,6 +106,7 @@ final class Rota {
         backup = backup.replace(".X.", tokenizedB);
         
         this.setChave(backup);
+        this.calculaDistancia(this.getChaveNormalizada().split("\\."));
     }
 
     /**

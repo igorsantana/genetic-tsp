@@ -74,7 +74,7 @@ class Main {
             boolean primeiroDeveMutar   = (Math.random() * 100) <= taxaMutacao;
             boolean segundoDeveMutar    = (Math.random() * 100) <= taxaMutacao;
             
-            Algoritmo.geraMutacao(primeiroDeveMutar , segundoDeveMutar);
+            Algoritmo.geraMutacao(primeiroDeveMutar, segundoDeveMutar);
             Algoritmo.buscaLocal(best);
             Algoritmo.atualizaPopulacao();
             
