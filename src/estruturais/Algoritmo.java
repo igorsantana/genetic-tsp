@@ -147,10 +147,12 @@ class Algoritmo {
         Boolean shouldBreak = (bestOrFirst == 1);
         for (int i = 0; i < vertices.length - 3; i++) {
             String[] vAux = vertices.clone();
+            
             vAux[i]      = vertices[i + 3];
             vAux[i + 1]  = vertices[i + 2];
             vAux[i + 2]  = vertices[i + 1];
             vAux[i + 3]  = vertices[i];
+            
             Rota newRota = new Rota(vAux.clone());
             if (newRota.getDistancia() < melhor.getDistancia()) {
                 melhor = newRota;
